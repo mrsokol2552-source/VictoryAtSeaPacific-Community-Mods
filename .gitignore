@@ -1,0 +1,9 @@
+artifacts/
+*.dll
+*.exe
+*.pdb
+*.log
+*.data
+obj/
+bin/
+reports/

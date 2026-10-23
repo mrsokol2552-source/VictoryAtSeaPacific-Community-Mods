@@ -1,0 +1,117 @@
+UI_SUPPLIES_LOW	Мало припасов
+UI_MORE_RECON_REQUIRED	Требуется дополнительная разведка
+TOOLTIP_AUTOBALANCE_BALANCED	Равномерное распределение экипажа.
+UI_TUTORIAL_VIDEO_TITLE_4	Противолодочная авиация
+UI_TUTORIAL_VIDEO_TITLE_5	Экран флота
+UI_TUTORIAL_VIDEO_TITLE_6	Приоритеты и снабжение
+UI_TUTORIAL_VIDEO_TITLE_7	Рейды
+UI_TUTORIAL_VIDEO_TITLE_8	Патрулирование
+UI_FLAGGED	Отмечено
+CREDIT_TRANSLATIONS	<b>Перевод</b>
+UI_UI_SCALE	Масштаб интерфейса
+UI_WINDOWED	Оконный режим
+UI_SAVE	Сохранить
+UI_DELETE	Удалить
+UI_LOGS	Журнал
+UI_TUTORIAL_WARNING	Эта кампания рассчитана на опытных игроков. Обучение доступно в кампании за США.
+UI_WAR_DECLARATION	Мы вступили в войну с державой [Faction].
+UI_JAPANESE_WAR_INTRO	Чтобы обеспечить выживание Великой восточноазиатской сферы сопроцветания, мы должны нанести упреждающий удар по нашим врагам. Пока они не выступают против нас, но после нашего нападения соответствующая держава объявит нам войну.
+UI_V_SYNC	Вертикальная синхронизация
+UI_SPOTTED_FLIGHT	Вражеская авиация замечена вблизи [Location].
+UI_SPOTTED_FLIGHT_AT_SEA	Вражеская авиация замечена в районе [Location].
+UI_WRONG_PAYLOAD	Неподходящая боевая нагрузка
+SHIP_PLURAL	корабли
+UI_TOGGLE_UI	Показать / скрыть интерфейс
+UI_SELECT_KAMIKAZES	Выбрать все звенья камикадзе
+UI_SIMPLIFY_FLIGHT_UI	Упрощённый интерфейс авиации
+UI_CONTROL_PAUSE_TIME	Пауза
+UI_CONTROL_TILT_UP	Наклонить камеру вверх
+UI_CONTROL_TILT_DOWN	Наклонить камеру вниз
+UI_CONTROL_ROTATE_LEFT	Повернуть камеру влево
+UI_CONTROL_ROTATE_RIGHT	Повернуть камеру вправо
+UI_TARGET_NOT_HOSTILE	Цель не является вражеской
+UI_PORT_FULLY_DESTROYED	Порт полностью уничтожен
+UI_NAME_YOUR_FLEET	Название соединения:
+UI_ENTER_FLEET_NAME	Введите название соединения...
+CHOICE_CONFIRM	Подтвердить
+CHOICE_CANCEL	Отмена
+UI_SAVING	Сохранение...
+UI_GAME_SAVED	Игра сохранена.
+UI_CONTINUE	Продолжить
+UI_SAVE_DELETION_CONFIRMATION	Удалить это сохранение?
+UI_ENTER_SAVE_NAME	Введите название сохранения...
+UI_NAME_YOUR_SAVE	Название сохранения:
+UI_OVERWRITE	Перезаписать
+UI_SAVE_OVERWRITE_CONFIRMATION	Перезаписать это сохранение?
+UI_MODS	Модификации
+UI_MODS_CURRENT	Текущая модификация: [MOD_NAME]
+MOD_CREATED	Создана новая модификация: [FILE].
+MOD_CREATE_EXISTS	Ошибка: [FILE] уже существует.
+MOD_CREATE_FAIL	Ошибка: не удалось создать [FILE].
+MOD_LOADED	Модификация загружена.
+MOD_LOAD_FAIL	Ошибка: не удалось загрузить модификацию.
+UI_CREATE_NEW_MOD	Создать модификацию
+UI_OPEN_MOD_FOLDER	Открыть папку модификации
+UI_DISABLE_MOD	Отключить модификацию
+UI_DESTROYED	Уничтожено
+UI_OPEN_MODDING_TOOLS	Открыть папку инструментов моддинга
+UI_NAME_YOUR_MOD	Название модификации:
+UI_ENTER_MOD_NAME	Введите название модификации...
+UI_SELECT_ASW_FLIGHTS	Выбрать все противолодочные звенья
+UI_DELIVER_SUPPLIES	Доставить припасы
+UI_COLLECT_SUPPLIES	Забрать припасы
+FEEDBACK_COLLECT_SUPPLIES	[Fleet] забирает припасы из порта [Port]
+FEEDBACK_DELIVER_SUPPLIES	[Fleet] доставляет припасы в порт [Port]
+UI_FLEET_CREW_BALANCE	Распределение экипажа соединения
+GUNBOAT	Канонерская лодка
+GUNBOAT_PLURAL	канонерские лодки
+UI_NAME_YOUR_SHIP	Название корабля:
+UI_ENTER_SHIP_NAME	Введите название корабля...
+UI_UK_DEFEAT_WARNING	Адмирал, японский императорский флот почти полностью контролирует Тихоокеанский театр. Если мы не сумеем переломить ход войны, Черчилль готов рассмотреть капитуляцию перед Японией.
+LOG_UK_DEFEAT	Великобритания, Содружество и их союзники безоговорочно капитулировали. Япония обеспечила свою безопасность и сохранила господство в Восточной Азии.
+UI_CUSTOM_BATTLE	Своя битва
+UI_PLAYER_FACTION	Держава игрока
+UI_TIME_OF_DAY	Время суток
+UI_FREEZE_TIME_OF_DAY	Зафиксировать время суток
+UI_SPAWN_STRUCTURES	Разместить сооружения
+UI_ADD_NEW_FLEET	Добавить соединение
+UI_NEW_FLEET_FACTION	Держава нового соединения
+UI_FLEET_HEADING	Курс
+UI_OFFSET	Смещение
+UI_UPGRADE_ALL_FLIGHTS	Улучшить все звенья
+UI_SHOW_ETA	Показывать время прибытия
+UI_TURN_ON_AA_MODE	Переключить орудие на зенитный огонь
+UI_TURN_OFF_AA_MODE	Переключить орудие на огонь по кораблям
+UI_DEPLOY_BOTH_FORCES	Разместить обе стороны
+UI_SHOW_AIRCRAFT_ALERTS	Сообщать об обнаружении авиации.
+UI_SIMPLIFY_SHIP_UI	Упрощённый интерфейс кораблей
+UI_COPY_PAYLOAD	Скопировать боевую нагрузку
+UI_SCRAP	Списать корабль за [WarBonds] военных облигаций.
+UI_LOCK_GUNS	Свободный огонь орудий
+UI_UNLOCK_GUNS	Прекратить огонь орудий
+UI_LOITER	Барражировать
+FEEDBACK_FLIGHT_LOITER	Авиации приказано барражировать над [Location]
+UI_SPEAKER_MODE	Режим звука
+SPEAKER_MODE_MONO	Моно
+SPEAKER_MODE_STEREO	Стерео
+SPEAKER_MODE_QUAD	Квадрофония
+SPEAKER_MODE_SURROUND	Объёмный звук
+SPEAKER_MODE_FIVE_POINT_ONE	Объёмный звук 5.1
+SPEAKER_MODE_SEVEN_POINT_ONE	Объёмный звук 7.1
+SPEAKER_MODE_PROLOGIC	Долби Пролоджик
+UI_ENABLE_AUTOSAVING	Автосохранение
+UI_CUSTOM_BATTLE_UPGRADE	Улучшить
+UI_CUSTOM_BATTLE_DOWNGRADE	Понизить уровень
+UI_VALUE	Значение
+UI_LOCK_SPOTTERS	Разрешить запуск разведчиков
+UI_UNLOCK_SPOTTERS	Запретить запуск разведчиков
+UI_CREATE_CONVOY_WAYPOINT	Создать точку маршрута конвоя
+UI_CONNECT	Соединить
+UI_CONNECT_TOOLTIP	Выберите другую точку маршрута конвоя. Esc или правая кнопка мыши — отмена.
+UI_SORT	Сортировка
+UI_SORT_MODE_HEALTH	Прочность
+UI_SORT_MODE_ARMAMENT	Вооружение
+UI_SORT_MODE_NAME	Название
+UI_SORT_MODE_UNLOCK_LEVEL	Уровень разблокировки
+UI_SUPPLIES	Припасы
+UI_23DT_TORPEDO	Торпеда 23DT
