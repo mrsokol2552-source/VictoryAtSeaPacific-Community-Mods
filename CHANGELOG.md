@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0-preview.2 — 2026-10-24
+- Optional Normal/Medium enemy ship construction balance: 125% speed by default instead of vanilla 150%; live toggle restores vanilla. Guarded by game assembly and method IL hashes. Other difficulties, player construction and income are unchanged.
+- Scrollable community section fits the native Modifications screen's right column, with readable text, a visible scrollbar and enough height for status lines.
+- 118th Russian override clarifies that supply fleets per port is an average fleet count, not war-bond income.
+- Installer refuses duplicate known plugin assemblies even if renamed. Loader, config and unrelated files remain preserved; temporary cleanup validates owned absolute paths.
+- Reproducible isolated Unity/Mono validation with results bound to exact DLL hashes. Historical claims are separated from current verification; releaseReady remains false.
+
 ## 0.2.0-preview.1 — 2026-10-24
 - Clean portable source project based on guarded R1–R5 Hotfix, Scout Patrol 0.1.0 and Interface Tools 0.1.2.
 - Minimal child section in native UIModOptions, independent controls without fake stock mod profiles.

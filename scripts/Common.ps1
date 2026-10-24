@@ -33,3 +33,26 @@ function Read-Json([string]$Path) { [IO.File]::ReadAllText($Path)|ConvertFrom-Js
 function Check-Entries($Entries) {
  $seen=@{}; foreach($f in @($Entries)) { if ($f.path -cnotin $script:OwnedPaths -or $seen.ContainsKey($f.path) -or $f.sha256 -notmatch '^[a-f0-9]{64}$') { throw 'Invalid owned manifest entry' }; $seen[$f.path]=$true }
 }
+function Assert-NoDuplicatePlugins([string]$Root) {
+ $plugins=Safe-Path $Root 'BepInEx/plugins'
+ if(!(Test-Path -LiteralPath $plugins)) { return }
+ $expected=@{}
+ foreach($relative in $script:OwnedPaths) { $expected[[IO.Path]::GetFileNameWithoutExtension($relative)]=Safe-Path $Root $relative }
+ $entries=@(Get-ChildItem -LiteralPath $plugins -Force -Recurse)
+ if(@($entries | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }).Count) { throw 'Plugin scan refused a junction/symlink; inspect it before updating.' }
+ foreach($file in @($entries | Where-Object { !$_.PSIsContainer -and $_.Extension -eq '.dll' })) {
+  try { $name=[Reflection.AssemblyName]::GetAssemblyName($file.FullName).Name }
+  catch { if($_.Exception -is [BadImageFormatException] -or $_.Exception.InnerException -is [BadImageFormatException]) { continue }; throw }
+  if($expected.ContainsKey($name) -and $file.FullName -ne $expected[$name]) { throw "Duplicate/legacy plugin outside its managed path; preserved: $($file.FullName)" }
+ }
+}
+function Remove-PrivateTemp([string]$Path,[string]$Prefix) {
+ $absolute=[IO.Path]::GetFullPath($Path).TrimEnd('\')
+ $tempRoot=[IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\')
+ if([IO.Path]::GetDirectoryName($absolute) -ne $tempRoot -or [IO.Path]::GetFileName($absolute) -notmatch ('^'+[regex]::Escape($Prefix)+'[0-9a-fA-F-]{32,36}$')) { throw "Refused temporary cleanup outside owned directory: $absolute" }
+ if(Test-Path -LiteralPath $absolute) {
+  if((Get-Item -LiteralPath $absolute -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Temporary cleanup refused a reparse point' }
+  if(@(Get-ChildItem -LiteralPath $absolute -Force -Recurse | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }).Count) { throw 'Temporary cleanup refused a nested reparse point' }
+  Remove-Item -LiteralPath $absolute -Recurse -Force
+ }
+}

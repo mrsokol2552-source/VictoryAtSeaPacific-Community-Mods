@@ -4,6 +4,7 @@ param([Parameter(Mandatory=$true)][ValidateSet('Install','Remove','Rollback')][s
 $root=[IO.Path]::GetFullPath($GamePath).TrimEnd('\')
 Assert-Closed $root
 Assert-Game $root
+Assert-NoDuplicatePlugins $root
 $statePath=Safe-Path $root '.vasp-community-owned.json'
 $journalPath=Safe-Path $root '.vasp-community-journal.json'
 $lockPath=Safe-Path $root '.vasp-community.lock'

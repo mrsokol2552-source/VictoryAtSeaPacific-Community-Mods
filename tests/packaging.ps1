@@ -39,8 +39,13 @@ try {
  [IO.File]::WriteAllText($ownedFile,'foreign conflict')
  Expect-Fail { & $manage -Action Install -GamePath $fixture -PackagePath $p1 -AllowExperimental } 'foreign destination'
  [IO.File]::Delete($ownedFile)
+ $duplicate=Join-Path $fixture 'BepInEx/plugins/renamed-legacy.dll'
+ Copy-Item -LiteralPath (Join-Path $repo 'artifacts/plugins/VaspHotfix.dll') -Destination $duplicate
+ Expect-Fail { & $manage -Action Install -GamePath $fixture -PackagePath $p1 -AllowExperimental } 'renamed duplicate plugin assembly'
+ Check ((Hash $duplicate) -eq (Hash (Join-Path $repo 'artifacts/plugins/VaspHotfix.dll'))) 'duplicate preserved on refusal'
+ [IO.File]::Delete($duplicate)
  Expect-Fail { Safe-Path $fixture '../escape' } 'path traversal'
  $a=Safe-Path $fixture 'VictoryAtSeaPacific_Data/Managed/Assembly-CSharp.dll';[IO.File]::AppendAllText($a,'bad')
  Expect-Fail { & $manage -Action Install -GamePath $fixture -PackagePath $p1 -AllowExperimental } 'unsupported game'
  Write-Output "Packaging fixture tests: $script:passed passed. No installed-game writes."
-} finally {Remove-Item -LiteralPath $temp -Recurse -Force}
+} finally {Remove-PrivateTemp $temp 'vasp-fixture-'}

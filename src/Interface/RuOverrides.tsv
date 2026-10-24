@@ -87,6 +87,7 @@ UI_SHOW_AIRCRAFT_ALERTS	Сообщать об обнаружении авиац�
 UI_SIMPLIFY_SHIP_UI	Упрощённый интерфейс кораблей
 UI_COPY_PAYLOAD	Скопировать боевую нагрузку
 UI_SCRAP	Списать корабль за [WarBonds] военных облигаций.
+UI_SUPPLY_FLEETS_PER_PORT	Флотов снабжения на один порт (в среднем): [number]
 UI_LOCK_GUNS	Свободный огонь орудий
 UI_UNLOCK_GUNS	Прекратить огонь орудий
 UI_LOITER	Барражировать

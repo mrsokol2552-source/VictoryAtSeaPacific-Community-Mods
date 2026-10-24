@@ -21,26 +21,17 @@ try {
         $stageDir = Join-Path $stage $m[0]
         New-Item -ItemType Directory $stageDir | Out-Null
         Copy-Item (Join-Path $srcDir '*.cs') $stageDir
-        if ($m[0] -eq 'Interface') {
-            $cnFile = Join-Path $stageDir 'ConvoyNavigation.cs'
-            if (Test-Path $cnFile) {
-                $content = [IO.File]::ReadAllText($cnFile, [Text.Encoding]::UTF8)
-                $content = $content.Replace('if (!agent) continue;', 'if (agent == null) continue;')
-                $content = $content.Replace('agent.MoveToDestination(final);', 'HarmonyLib.AccessTools.Method(typeof(FleetAIAgent), "MoveToDestination").Invoke(agent, new object[] { final });')
-                [IO.File]::WriteAllText($cnFile, $content, [Text.Encoding]::UTF8)
-            }
-        }
         $sources=@(Get-ChildItem -LiteralPath $stageDir -Filter '*.cs' -File | Sort-Object Name | Select-Object -ExpandProperty FullName)
         if (!$sources.Count) { throw "No sources for $($m[0])" }
-        $args=@('/nologo','/noconfig','/target:library','/optimize+','/unsafe+','/nostdlib+','/warn:4',"/out:$stage\$($m[1]).dll")
-        $args+=@($refs | ForEach-Object { '/reference:'+$_ })
-        if ($m[0] -eq 'Bridge') { $args+=@('VaspHotfix','VaspScoutPatrol','VaspInterfaceTools') | ForEach-Object { "/reference:$stage\$_.dll" } }
-        if ($m[0] -eq 'Interface') { $args+="/resource:$PSScriptRoot\src\Interface\RuOverrides.tsv,VaspInterfaceTools.RuOverrides.tsv" }
-        & $CompilerPath @args @sources
+        $compilerArgs=@('/nologo','/noconfig','/target:library','/optimize+','/unsafe+','/nostdlib+','/warn:4',"/out:$stage\$($m[1]).dll")
+        $compilerArgs+=@($refs | ForEach-Object { '/reference:'+$_ })
+        if ($m[0] -eq 'Bridge') { $compilerArgs+=@('VaspHotfix','VaspScoutPatrol','VaspInterfaceTools') | ForEach-Object { "/reference:$stage\$_.dll" } }
+        if ($m[0] -eq 'Interface') { $compilerArgs+="/resource:$PSScriptRoot\src\Interface\RuOverrides.tsv,VaspInterfaceTools.RuOverrides.tsv" }
+        & $CompilerPath @compilerArgs @sources
         if ($LASTEXITCODE -ne 0) { throw "Compiler failed: $($m[0])" }
     }
     if (Test-Path $OutputPath) { if (@(Get-ChildItem $OutputPath -Force | Where-Object { $_.Name -notin @('VaspHotfix.dll','VaspScoutPatrol.dll','VaspInterfaceTools.dll','VaspCommunityMods.dll') }).Count) { throw 'Output folder has unexpected files; use a dedicated empty output folder' } }
     New-Item -ItemType Directory -Force $OutputPath | Out-Null
     Copy-Item "$stage\*.dll" $OutputPath
     Write-Output "Built four plugins only: $OutputPath (all references private/CopyLocal=false)"
-} finally { Remove-Item -LiteralPath $stage -Recurse -Force }
+} finally { Remove-PrivateTemp $stage 'vasp-build-' }
