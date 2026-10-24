@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory=$true)][string]$GamePath,[Parameter(Mandatory=$true)][string]$ClientPath,[Parameter(Mandatory=$true)][string]$ReportPath,[string]$InputSave='', [ValidateSet('main','restart')][string]$Phase='main')
+param([Parameter(Mandatory=$true)][string]$GamePath,[Parameter(Mandatory=$true)][string]$ClientPath,[Parameter(Mandatory=$true)][string]$ReportPath,[string]$InputSave='', [ValidateSet('main','restart','industry-restart')][string]$Phase='main')
 $ErrorActionPreference='Stop'
 $repo=Split-Path $PSScriptRoot -Parent
 . "$repo\scripts\Common.ps1"
@@ -13,10 +13,15 @@ $plugins=Join-Path $client 'BepInEx/plugins'
 $allow=@('VaspHotfix.dll','VaspScoutPatrol.dll','VaspInterfaceTools.dll','VaspCommunityMods.dll','VaspRuntimeValidation.dll')
 $existing=@(Get-ChildItem -LiteralPath $plugins -Recurse -Filter '*.dll' -File)
 if(@($existing | Where-Object {$_.Name -notin $allow}).Count -or @($existing | Group-Object Name | Where-Object Count -gt 1).Count) { throw 'Private client contains another test/helper or duplicate plugin. Use a dedicated clean private client.' }
-New-Item -ItemType Directory -Force $ReportPath | Out-Null
 $report=[IO.Path]::GetFullPath($ReportPath)
 if($report -eq $game -or $report.StartsWith($game+'\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Validation reports must be outside the installed game.' }
-if($Phase -eq 'main') {
+New-Item -ItemType Directory -Force $report | Out-Null
+[IO.File]::WriteAllText((Safe-Path $report 'runtime.txt'),'PENDING: this validation process has not completed.')
+foreach($name in @('modifications-top.png','modifications-bottom.png','industry-max.png','industry-confirm.png')) {
+ $prior=Safe-Path $report $name
+ if(Test-Path -LiteralPath $prior){Move-Item -LiteralPath $prior -Destination (Safe-Path $report ($name+'.previous-'+[guid]::NewGuid().ToString('N')))}
+}
+if($Phase -ne 'restart') {
  if(!$InputSave) { throw 'An explicit save is required; it will only be read and copied.' }
  Copy-Item -LiteralPath $InputSave -Destination (Join-Path $report 'input.data')
 }
@@ -36,7 +41,7 @@ $refs+=@((Join-Path $core 'BepInEx.dll'),(Join-Path $core '0Harmony.dll'))
 $refs+=@($allow[0..3] | ForEach-Object {Join-Path $products $_})
 $probe=Join-Path $plugins 'VaspRuntimeValidation.dll'
 $compiler=Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
-$compilerArgs=@('/nologo','/noconfig','/target:library','/nostdlib+','/optimize+',"/out:$probe")+@($refs | ForEach-Object {'/reference:'+$_})+@(Join-Path $PSScriptRoot 'RuntimeValidation.cs')
+$compilerArgs=@('/nologo','/noconfig','/target:library','/nostdlib+','/optimize+',"/out:$probe")+@($refs | ForEach-Object {'/reference:'+$_})+@((Join-Path $PSScriptRoot 'RuntimeValidation.cs'),(Join-Path $PSScriptRoot 'IndustryValidation.cs'))
 & $compiler @compilerArgs
 if($LASTEXITCODE -ne 0){throw 'Runtime helper compilation failed'}
 $log=Join-Path $report 'unity.log'

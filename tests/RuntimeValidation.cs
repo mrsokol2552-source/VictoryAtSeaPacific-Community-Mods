@@ -14,7 +14,7 @@ using Path = System.IO.Path;
 // Test helper, compiled into a separate private client only. Never packaged.
 [BepInPlugin("com.vasp.communitymods.validation", "Community Runtime Validation", "0.2.0.2")]
 [BepInDependency("com.vasp.communitymods")]
-public sealed class RuntimeValidation : BaseUnityPlugin
+public sealed partial class RuntimeValidation : BaseUnityPlugin
 {
     private static string root;
     private static int blockedWrites, checks;
@@ -131,7 +131,16 @@ public sealed class RuntimeValidation : BaseUnityPlugin
         while(Get<bool>(GameManager.instance,"isLoadingGame")) yield return null;
         GameTime.SetPlayerPause(true); GameTime.timeScale=0;
         yield return new WaitForSecondsRealtime(2);
+        if(Arg("-validationPhase")=="industry-restart")
+        {
+            string[] expected=File.ReadAllLines(Path.Combine(root,"expected-ports.txt"));
+            Check(HomeIndustry.GetLevel(FindPort(expected[0]))==2 && HomeIndustry.GetLevel(FindPort(expected[1]))==1,"industry levels belong to the saved campaign after process restart");
+            Check(SameBytes(IndustryState.Instance.GetSerialized(),File.ReadAllBytes(Path.Combine(root,"industry-state.bin"))),"all fractional ammunition remainders survive process restart");
+            Check(Plugin.Instance.IndustryEnabled && Near(GameManager.instance.GetEnemyShipBuildTimeMultiplier(),1.25f),"industry and 125% construction coexist after load");
+            Finish("ALL PASS industry-restart"); yield break;
+        }
         TestMultipliers(); TestConstruction();
+        var industryTests=TestIndustry(); while(industryTests.MoveNext()) yield return industryTests.Current;
         SaveManager.instance.AutoSave(ESaveType.Autosave); Check(blockedWrites>0,"native autosave write blocked");
         var tools=VaspInterfaceTools.InterfacePlugin.Instance; Check(tools.ConvoyApplied && tools.RussianApplied,"interface modules initially loaded");
         var graphs=(NavGraph[])AstarPath.active.astarData.graphs.Clone();
@@ -159,6 +168,8 @@ public sealed class RuntimeValidation : BaseUnityPlugin
         }
         Button(section,"Обычный уровень").onClick.Invoke(); Check(!Plugin.Instance.ConstructionApplied,"construction menu button disabled");
         Button(section,"Обычный уровень").onClick.Invoke(); Check(Plugin.Instance.ConstructionApplied,"construction menu button enabled");
+        Button(section,"Промышленность").onClick.Invoke(); Check(!Plugin.Instance.IndustryEnabled,"industry module menu disabled");
+        Button(section,"Промышленность").onClick.Invoke(); Check(Plugin.Instance.IndustryEnabled,"industry module menu enabled");
         Check(ModManager.instance.activeModName==stock,"stock data-mod selection preserved");
         string ratio=LocalisationManager.instance.GetLocalised("UI_SUPPLY_FLEETS_PER_PORT");
         Check(ratio.Contains("[number]") && ratio.Contains("в среднем"),"supply-fleet ratio label explains average, preserves placeholder");
@@ -168,7 +179,7 @@ public sealed class RuntimeValidation : BaseUnityPlugin
         yield return new WaitForSecondsRealtime(.5f); Canvas.ForceUpdateCanvases();
         Check(scroll.verticalScrollbar.handleRect.rect.width<=16,"scrollbar handle does not cover controls");
         Record("LAYOUT viewport="+scroll.viewport.rect+" content="+scroll.content.rect+" preferred="+LayoutUtility.GetPreferredHeight(scroll.content)+" children="+scroll.content.childCount);
-        Check(scroll.content.childCount==12 && scroll.content.rect.height>=LayoutUtility.GetPreferredHeight(scroll.content)-1,"content height includes every control and status line");
+        Check(scroll.content.childCount==13 && scroll.content.rect.height>=LayoutUtility.GetPreferredHeight(scroll.content)-1,"content height includes every control and status line");
         Check(scroll.content.rect.height>scroll.viewport.rect.height,"overflow reachable by scrolling at 1280x720");
         scroll.verticalNormalizedPosition=1; Application.CaptureScreenshot(Path.Combine(root,"modifications-top.png"));
         yield return new WaitForSecondsRealtime(.5f); scroll.verticalNormalizedPosition=0;

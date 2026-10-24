@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace VaspCommunityMods {
- [BepInPlugin("com.vasp.communitymods", "VASP Community Mods", "0.2.0.2")]
+ [BepInPlugin("com.vasp.communitymods", "VASP Community Mods", "0.3.0.1")]
  [BepInProcess("VictoryAtSeaPacific.exe")]
  [BepInDependency("com.vasp.hotfix")]
  [BepInDependency("com.vasp.scoutpatrol")]
@@ -16,21 +16,31 @@ namespace VaspCommunityMods {
  public sealed class Plugin : BaseUnityPlugin {
   private Harmony harmony;
   private Harmony construction;
+  private Harmony industry;
+  private ConfigEntry<bool> industryChoice;
   private ConfigEntry<bool> constructionChoice;
   private ConfigEntry<int> constructionPercent;
   public static Plugin Instance { get; private set; }
   public bool ConstructionApplied { get; private set; }
   public string ConstructionError { get; private set; }
+  public bool IndustryAvailable { get; private set; }
+  public bool IndustryEnabled { get { return IndustryAvailable && industryChoice.Value; } }
+  public string IndustryError { get; private set; }
   public int NormalEnemyBuildSpeedPercent { get { return constructionPercent.Value; } }
   private void Awake() {
    Instance=this;
    constructionChoice=Config.Bind("Balance","NormalConstructionEnabled",true,"Medium difficulty only: use the selected enemy ship construction speed. Disabled restores vanilla 150%. Live change; existing queue work and saves are not rewritten.");
    constructionPercent=Config.Bind("Balance","NormalEnemyBuildSpeedPercent",125,new ConfigDescription("Enemy ship construction speed on Medium, as a percentage of the player's rate. Vanilla is 150; default is 125. Other difficulties and incomes are unchanged.",new AcceptableValueRange<int>(100,150)));
+   industryChoice=Config.Bind("Industry","Enabled",true,"Paid home-port production upgrades: 3000 bonds for 120%, then 5000 for 144%. Disabling pauses the bonus/purchases but preserves campaign levels. AI does not buy automatically.");
    if(constructionChoice.Value) SetConstructionEnabled(true);
    harmony=new Harmony("com.vasp.communitymods.screen");
    try { harmony.Patch(AccessTools.Method(typeof(UIModOptions),"OnEnable"),postfix:new HarmonyMethod(typeof(Plugin),"Attach")); }
    catch(Exception e) { harmony.UnpatchSelf(); Logger.LogError(e); }
+   industry=new Harmony(HomeIndustry.Owner);
+   try { HomeIndustry.Install(industry); IndustryAvailable=true; }
+   catch(Exception e) { industry.UnpatchSelf(); IndustryError=e.ToString(); Logger.LogError(IndustryError); }
   }
+  public void SetIndustryEnabled(bool value) { industryChoice.Value=value; Config.Save(); }
   public bool SetConstructionEnabled(bool value) {
    ConstructionError=null;
    try {
@@ -57,7 +67,7 @@ namespace VaspCommunityMods {
    if(!__instance.GetComponent<CommunitySection>()) __instance.gameObject.AddComponent<CommunitySection>();
   }
   private void OnDestroy() {
-   try { if(construction!=null) construction.UnpatchSelf(); }
+   try { if(industry!=null) industry.UnpatchSelf(); if(construction!=null) construction.UnpatchSelf(); }
    finally { ConstructionApplied=false; if(harmony!=null) harmony.UnpatchSelf(); if(Instance==this) Instance=null; }
   }
  }
@@ -97,6 +107,7 @@ namespace VaspCommunityMods {
    AddButton(content.transform,source,"Конвои — включить / отключить",delegate { ToggleModule("VaspInterfaceTools.InterfacePlugin", "VaspInterfaceTools", "SetConvoyEnabled", "ConvoyApplied"); });
    AddButton(content.transform,source,"Дополнение RU — включить / отключить",delegate { ToggleModule("VaspInterfaceTools.InterfacePlugin", "VaspInterfaceTools", "SetRussianEnabled", "RussianApplied"); });
    AddButton(content.transform,source,"Обычный уровень: баланс строительства — вкл. / выкл.",delegate { var p=Plugin.Instance; if(p) p.SetConstructionEnabled(!p.ConstructionApplied); });
+   AddButton(content.transform,source,"Промышленность портов — включить / отключить",delegate { var p=Plugin.Instance; if(p) p.SetIndustryEnabled(!p.IndustryEnabled); });
    state=AddText(content.transform,source,""); stateSize=state.GetComponent<LayoutElement>();
   }
   private void ToggleModule(string type,string assembly,string method,string property) {
@@ -131,10 +142,13 @@ namespace VaspCommunityMods {
    text+="Патруль: "+(p && p.Applied?"действует":"выкл.")+"\nКонвои: "+(tools && tools.ConvoyApplied?"действуют":"выкл.")+"\nRU: "+(tools && tools.RussianApplied?"действует":"выкл.");
    var balance=Plugin.Instance;
    if(balance) text+="\nОбычный уровень — строительство ИИ: "+(balance.ConstructionApplied?balance.NormalEnemyBuildSpeedPercent:150)+"%";
+   if(balance) text+="\nПромышленность: "+(balance.IndustryEnabled?"действует":"выкл.");
    if(p && p.LastError!=null) text+="\nПатруль: "+p.LastError;
    if(tools && tools.LastError!=null) text+="\nИнтерфейс: "+tools.LastError;
    if(h && h.LastError!=null) text+="\nХотфикс: "+h.LastError;
    if(balance && balance.ConstructionError!=null) text+="\nСтроительство: "+balance.ConstructionError;
+   if(balance && balance.IndustryError!=null) text+="\nПромышленность: "+balance.IndustryError;
+   if(IndustryState.Instance && IndustryState.Instance.LoadError!=null) text+="\nПромышленность: "+IndustryState.Instance.LoadError;
    if(actionError!=null) text+="\nДействие: "+actionError;
    state.text=text;
    stateSize.preferredHeight=Math.Max(38,state.preferredHeight+8);

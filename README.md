@@ -1,8 +1,8 @@
-# VASP Community Mods — 0.2.0-preview.2
+# VASP Community Mods — 0.3.0-preview.1
 
 Неофициальные модификации для **Victory At Sea Pacific 1.14.2**, Windows x64, Unity 5.6.7f1 / Mono. Управление находится в штатном разделе **«Модификации»**. Проект не связан с Evil Twin Artworks. Экспериментальный релиз: `releaseReady: false`.
 
-[Скачать preview.2](https://github.com/mrsokol2552-source/VictoryAtSeaPacific-Community-Mods/releases/tag/v0.2.0-preview.2) · [Установка и откат](INSTALL.md) · [Проверки этой сборки](docs/validation-preview2.md)
+[Скачать 0.3.0-preview.1](https://github.com/mrsokol2552-source/VictoryAtSeaPacific-Community-Mods/releases/tag/v0.3.0-preview.1) · [Установка и откат](INSTALL.md) · [Промышленность портов](docs/industry.md) · [Проверки этой сборки](docs/validation-industry.md)
 
 ## Что входит
 
@@ -13,13 +13,14 @@
 | Конвои | Редактор связей путевых точек на базе Interface Tools 0.1.2; стабильный слот PointGraph, отдельные морские/конвойные запросы, защита устаревших ответов и учёт смещения флагмана в строю. Пунктир — сеть собственных конвоев снабжения, не запретная зона. «Готово», Esc и ПКМ завершают редактирование; панель скрывается вне редактирования. |
 | Дополнение RU | 118 замен, включая «Прибытие» вместо ETA. Показатель снабжения подписан как среднее число флотов снабжения на порт: это не выплата облигаций. Перевод частичный; имена и позывные автоматически не переводятся. Остаточные английские ключи собираются локально в `BepInEx/config/VaspUntranslated.csv`. |
 | Строительство ИИ | **125% скорости игрока на обычной сложности вместо 150%.** Включено по умолчанию и работает в существующей кампании Medium. Отключение возвращает 150%. Доходы, число строительных слотов и скорость игрока не меняются. Easy / Hard / Hard+ сохраняют штатные 100% / 200% / 800%. |
+| Промышленность домашних портов | Покупка двух уровней для каждого своего домашнего порта: **3 000 облигаций → 120%**, затем **5 000 → 144%** базового выпуска всех девяти ресурсов. Уровни и дробные остатки боеприпасов сохраняются в конкретной кампании. Отдельная кнопка с подтверждением находится над карточкой выбранного порта. ИИ автоматически улучшения не покупает. |
 
 ## Управление
 
 Откройте **«Модификации» → секцию Community Mods справа**. Для прокрутки используйте колесо или полосу справа. В нижней части показаны фактические состояния и ошибки применения.
 
 - **H1–H5:** кнопка сохраняет выбор; состояние показывает, что действует сейчас и что изменится после полного выхода и нового запуска. Снятие патча не отменило бы уже восстановленные объекты, поэтому нужен перезапуск.
-- **Патруль, конвои, RU и строительство:** переключаются сразу. Отключение патруля прекращает автоматизацию и передаёт звенья штатной логике возврата. Конвои возвращаются к штатной навигации; уже совершённые перемещения не отменяются. RU восстанавливает исходные строки.
+- **Патруль, конвои, RU, строительство и промышленность:** переключаются сразу. Отключение патруля передаёт звенья штатной логике возврата. Конвои возвращаются к штатной навигации; совершённые перемещения не отменяются. RU восстанавливает исходные строки. Промышленность при отключении сохраняет купленные уровни, но приостанавливает бонус и новые покупки; возврата облигаций нет.
 - **Сторонний мод данных:** штатный выбор остаётся отдельным. Мост не вызывает `LoadMod`/`DisableMods`, не меняет `activeModName` и не создаёт фиктивных профилей модов.
 
 Настройки прежних трёх плагинов остаются в их cfg. Новый баланс использует `BepInEx/config/com.vasp.communitymods.cfg`:
@@ -28,6 +29,9 @@
 [Balance]
 NormalConstructionEnabled = true
 NormalEnemyBuildSpeedPercent = 125
+
+[Industry]
+Enabled = true
 ```
 
 Допустимый процент — 100–150. Это **скорость**, поэтому при 125% время на одинаковую работу равно времени игрока / 1,25. После ручного редактирования cfg перезапустите игру; кнопка включения/отключения действует сразу. Выполненная работа в очередях не пересчитывается, сохранения не преобразуются. Если другой мод уже возвращает иной множитель, это значение сохраняется и выводится предупреждение.
@@ -44,9 +48,9 @@ NormalEnemyBuildSpeedPercent = 125
 
 ## Проверки и пределы
 
-Проверены 12 сценариев установщика на отдельных фикстурах и загрузка четырёх DLL в настоящем Unity/Mono: реальные множители и продвижение очереди строительства, кнопки меню, повторное открытие экрана, 100 перестроений графа и отдельный перезапуск. Точные SHA-256 и методика находятся в [отчёте preview.2](docs/validation-preview2.md).
+Проверены установщик и настоящая Unity/Mono: множители и очередь строительства, меню, 100 перестроений графа, покупки промышленности, реальное производство всех ресурсов и сохранение/загрузка уровней после перезапуска. Отдельный запуск с четырьмя DLL мода, отключёнными в приватном клиенте, проверяет загрузку расширенного сохранения штатной игрой. Точные SHA-256, результаты и ограничения: [отчёт промышленности](docs/validation-industry.md). [Отчёт preview.2](docs/validation-preview2.md) относится к предыдущим бинарным файлам.
 
-В этой проверке **не подтверждены** длительный бой, весь цикл патрульного вылета, полный рейс конвоя с выгрузкой и сохранение/повторная загрузка кампании с активной автоматизацией. [Старый отчёт](docs/runtime-validation.md) относится к другим хешам и оставлен как история. Используйте копии сохранений. Отдельные NRE в `UISquadronListElement.SetTarget` и `FlightAIAgent` также наблюдались ранее. Пакет не обещает исправить все ошибки или повысить FPS.
+В этой проверке **не подтверждены** длительный бой, весь цикл патрульного вылета, полный рейс конвоя с выгрузкой и сохранение/повторная загрузка с активными заданиями патруля/конвоев. [Старый отчёт](docs/runtime-validation.md) оставлен как история. Используйте копии сохранений. Отдельные NRE в `UISquadronListElement.SetTarget` и `FlightAIAgent` наблюдались ранее. Пакет не обещает исправить все ошибки или повысить FPS.
 
 Поддерживается только `Assembly-CSharp.dll` размером **3 223 040 байт**, SHA-256:
 
@@ -66,4 +70,4 @@ NormalEnemyBuildSpeedPercent = 125
 
 Experimental, unofficial plugins for VASP **1.14.2**, Unity 5.6.7f1 Mono x64. Install **BepInEx 5.4.23.5 x64** separately, close the game and follow [INSTALL.md](INSTALL.md). Controls are in the existing Modifications screen, in a scrollable community section. H1–H5 changes require a full restart; patrol, convoy, partial Russian translation and Normal construction balance toggle live.
 
-Preview.2 defaults enemy ship construction to **125% on Medium**, replacing vanilla 150%; disabling restores vanilla. Player construction, income and other difficulties are unchanged. See the hash-bound [validation report](docs/validation-preview2.md) for native Unity checks and limits. Long battles, complete patrol/convoy cycles and campaign save round trips remain unverified for these exact binaries. No proprietary game libraries, loader binaries, saves or private helper DLLs are distributed.
+Enemy construction defaults to **125% on Medium** instead of vanilla 150%; player construction and other difficulties are unchanged. Version 0.3 adds paid home-port industry: 3,000 bonds for 120%, then 5,000 more for 144% of base production. Both levels are per port and persist in that campaign; fractional ammunition bonuses accumulate accurately. Open an owned home port on the Bridge screen and confirm the purchase above its card. Storage capacities stay unchanged. Disabling pauses bonuses without refunding or deleting levels; AI does not purchase automatically. See [industry details](docs/industry.md) and the hash-bound [validation report](docs/validation-industry.md). Long battles and complete patrol/convoy cycles remain unverified. No game libraries, loader binaries, saves or helper DLLs are distributed.

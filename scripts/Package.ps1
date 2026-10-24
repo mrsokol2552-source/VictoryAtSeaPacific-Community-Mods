@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$PluginPath='', [string]$OutputPath='', [string]$Version='0.2.0-preview.2')
+param([string]$PluginPath='', [string]$OutputPath='', [string]$Version='0.3.0-preview.1')
 . "$PSScriptRoot\Common.ps1"
 $repo=Split-Path $PSScriptRoot -Parent
 if(!$PluginPath) { $PluginPath=Join-Path $repo 'artifacts/plugins' }
@@ -23,8 +23,8 @@ try {
  foreach($s in @('Common.ps1','Manage.ps1')) { Copy-Item (Join-Path $PSScriptRoot $s) (Join-Path $stage 'scripts') }
  foreach($d in @('INSTALL.md','README.md','CHANGELOG.md','LICENSE','THIRD_PARTY_NOTICES.md')) { if(!(Test-Path (Join-Path $repo $d))) { throw "Required packaging documentation absent: $d" }; Copy-Item (Join-Path $repo $d) $stage }
  New-Item -ItemType Directory (Join-Path $stage 'docs') | Out-Null
- foreach($d in @('validation-preview2.md','runtime-validation.md')) { Copy-Item -LiteralPath (Join-Path $repo ('docs/'+$d)) -Destination (Join-Path $stage ('docs/'+$d)) }
- $allow=@('manifest.json','scripts/Common.ps1','scripts/Manage.ps1','INSTALL.md','README.md','CHANGELOG.md','LICENSE','THIRD_PARTY_NOTICES.md','docs/validation-preview2.md','docs/runtime-validation.md')+@($script:OwnedPaths | ForEach-Object { 'payload/'+$_ })
+ foreach($d in @('industry.md','validation-industry.md','validation-preview2.md','runtime-validation.md')) { Copy-Item -LiteralPath (Join-Path $repo ('docs/'+$d)) -Destination (Join-Path $stage ('docs/'+$d)) }
+ $allow=@('manifest.json','scripts/Common.ps1','scripts/Manage.ps1','INSTALL.md','README.md','CHANGELOG.md','LICENSE','THIRD_PARTY_NOTICES.md','docs/industry.md','docs/validation-industry.md','docs/validation-preview2.md','docs/runtime-validation.md')+@($script:OwnedPaths | ForEach-Object { 'payload/'+$_ })
  $actual=@(Get-ChildItem $stage -File -Recurse | ForEach-Object { $_.FullName.Substring($stage.Length+1).Replace('\','/') })
  if(@(Compare-Object ($allow|Sort-Object) ($actual|Sort-Object)).Count) { throw 'Archive allowlist mismatch' }
  New-Item -ItemType Directory -Force $OutputPath | Out-Null
